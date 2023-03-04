@@ -18,7 +18,7 @@ import importlib
 importlib.reload(hlp);
 
 #a = df.iloc[i]
-def process(a, correct):
+def process(a):
     try:
         mic = np.array(hlp.head_2_ku_ears(np.array([a.headC_x, a.headC_y, a.headC_z]),
                                             np.array([a.headOrient_azi,a.headOrient_ele])))
@@ -91,11 +91,10 @@ def process(a, correct):
                             sig.resample_poly(reverberant_src[1], fs_target, fs_rir)])
         anechoic_src = np.array([sig.resample_poly(anechoic_src[0], fs_target, fs_rir), 
                             sig.resample_poly(anechoic_src[1], fs_target, fs_rir)])
-        if correct:
         # Apply RIC correction bell filter at 2kHz resonance:
-            reverberant_src = np.array([sig.lfilter(filt_b, filt_a, reverberant_src[0]), sig.lfilter(filt_b, filt_a, reverberant_src[1])])
+        reverberant_src = np.array([sig.lfilter(filt_b, filt_a, reverberant_src[0]), sig.lfilter(filt_b, filt_a, reverberant_src[1])])
 
-            anechoic_src = np.array([sig.lfilter(filt_b, filt_a, anechoic_src[0]), sig.lfilter(filt_b, filt_a, anechoic_src[1])])
+        anechoic_src = np.array([sig.lfilter(filt_b, filt_a, anechoic_src[0]), sig.lfilter(filt_b, filt_a, anechoic_src[1])])
 
         # Apply SNR:
         ini_snr = 10 * np.log10(hlp.power(reverberant_src) / hlp.power(noise) + np.finfo(noise.dtype).resolution)
@@ -168,7 +167,7 @@ if __name__ == '__main__':
      # also save the configuration:
     config = {'mls_path' : mls_path, 'wham_path' : wham_path, 
               'decoder_path' : decoder_path, 'df_path' : df_path,
-              'fs_rir' : fs, 'fs_target' : fs_target, 'ambi_order': ambi_order, 'success': False}
+              'fs_rir' : fs_rir, 'fs_target' : fs_target, 'ambi_order': ambi_order, 'success': False}
     with open(pjoin(output_path, 'config.json'), 'w') as f:
         json.dump(config, f)
     
