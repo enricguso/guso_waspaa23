@@ -8,6 +8,26 @@ import scipy.signal as signal
 
 
 # ----------- FUNCTION DEFINITIONS: -----------
+def bell(fc, fs, gain, Q):
+    wc = 2 * np.pi * fc / fs
+    c = 1.0 / np.tan(wc / 2.0)
+    phi = c*c
+    Knum = c / Q
+    Kdenom = Knum
+
+    if (gain > 1.0):
+        Knum *= gain
+    elif (gain < 1.0):
+        Kdenom /= gain
+
+    a0 = phi + Kdenom + 1.0
+
+    b = [(phi + Knum + 1.0) / a0, 2.0 *
+         (1.0 - phi) / a0, (phi - Knum + 1.0) / a0]
+    a = [1, 2.0 * (1.0 - phi) / a0, (phi - Kdenom + 1.0) / a0]
+
+    return np.asarray(b), np.asarray(a)
+
 def power(signal):
     return np.mean(signal**2)
 
