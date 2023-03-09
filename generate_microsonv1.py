@@ -178,6 +178,14 @@ if __name__ == '__main__':
     with Pool(num_workers) as p:
         p.map(process, [df.iloc[i] for i in range(len(df))])
     
+    print('Multiprocessing files processed. Starting single-thread process:')
+    # Some files can't be processed by multiprocessing (I guess it's the time-stretching library:
+    processed_files = os.listdir(pjoin(pjoin(output_path, 'train'), 'reverberant'))
+    processed_files = [os.path.splitext(x)[0]+'.flac' for x in processed_files]
+    unprocessed_files = df[~df['speech_path'].isin(processed_files)]
+    for i in range(len(unprocessed_files)):
+        process(unprocessed_files.iloc[i])
+        
     config['success'] = True
     with open(pjoin(output_path, 'config.json'), 'w') as f:
         json.dump(config, f)
