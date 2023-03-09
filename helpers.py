@@ -65,6 +65,23 @@ def crop_echogram(anechoic_echogram):
                 anechoic_echogram[src, rec, band].order = anechoic_echogram[src, rec, band].order[:2,:]
     return anechoic_echogram
 
+def align_signals(s1,s2):
+    corr = sig.correlate(s1[:48000,1],s2[:48000,1],mode='full')
+    plt.figure()
+    plt.xcorr(1[:48000,1],s2[:48000,1])
+    plt.show()
+    # shift = np.argmax(np.abs(corr))
+    # print(shift)
+    # plt.figure()
+    # plt.plot(s1)
+    # plt.show()
+    # s1=s1[shift:,:]
+    # plt.figure()
+    # plt.plot(s1)
+    # plt.show()
+    s1=np.concatenate((s1,np.zeros((shift,2))),axis=0)
+    return s1,s2
+
 
 def place_on_circle(head_pos,r,angle_deg):
 # place a source around the reference point (like head)
