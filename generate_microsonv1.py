@@ -75,7 +75,10 @@ def process(a):
         ane_echograms = hlp.crop_echogram(copy.deepcopy(abs_echograms))
         mic_rirs = srs.render_rirs_sh(abs_echograms, band_centerfreqs, fs_rir)/np.sqrt(4*np.pi)
         ane_rirs = srs.render_rirs_sh(ane_echograms, band_centerfreqs, fs_rir)/np.sqrt(4*np.pi)
-
+        # Pad anechoic rirs so we don't loose alignment when convolving
+        zeros_to_pad = len(mic_rirs) - len(ane_rirs)
+        zeros_to_pad = np.zeros((zeros_to_pad, mic_rirs.shape[1], mic_rirs.shape[2], mic_rirs.shape[3]))
+        ane_rirs = np.concatenate((ane_rirs, zeros_to_pad))
         # Decode SH IRs to binaural
         bin_ir = np.array([sig.fftconvolve(np.squeeze(mic_rirs[:,:,0, 0]), decoder[:,:,0], 'full', 0).sum(1),
                             sig.fftconvolve(np.squeeze(mic_rirs[:,:,1, 0]), decoder[:,:,1], 'full', 0).sum(1)])
