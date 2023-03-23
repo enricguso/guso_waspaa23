@@ -89,7 +89,14 @@ def log_single_bin(mixtures, targets, estimates, experiment, step):
         estimate = estimates[batch_utt].detach().cpu().numpy()
         mixture = mixtures[batch_utt].detach().cpu().numpy()
         target = targets[batch_utt].detach().cpu().numpy()
+    for batch_utt in range(mixtures.shape[0]):
+        estimate = estimates[batch_utt].detach().cpu().numpy()
+        mixture = mixtures[batch_utt].detach().cpu().numpy()
+        target = targets[batch_utt].detach().cpu().numpy()
 
+        estimate = estimate / np.abs(estimate).max(-1, keepdims=True)
+        mixture = mixture / np.abs(mixture).max(-1, keepdims=True)
+        target = target / np.abs(target).max(-1, keepdims=True)
         estimate = estimate / np.abs(estimate).max(-1, keepdims=True)
         mixture = mixture / np.abs(mixture).max(-1, keepdims=True)
         target = target / np.abs(target).max(-1, keepdims=True)
