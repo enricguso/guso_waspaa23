@@ -106,3 +106,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 sudo_rm_rf/nohup.out
+sudo_rm_rf/m4_alldata_normal_causal.txt
+sudo_rm_rf/m5_alldata_mild_causal.txt
+sudo_rm_rf/m1_alldata_normal.txt
+sudo_rm_rf/m5_alldata_mild_causal.txt
