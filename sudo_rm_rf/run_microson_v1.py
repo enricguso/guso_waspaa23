@@ -146,8 +146,18 @@ else:
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(
     [cad for cad in hparams['cuda_available_devices']])
-
-model = causal_improved_sudormrf.CausalSuDORMRF(
+if hparams['causal']:
+    model = causal_improved_sudormrf.CausalSuDORMRF(
+            in_audio_channels=2,
+            out_channels=hparams['out_channels'],
+            in_channels=hparams['in_channels'],
+            num_blocks=hparams['num_blocks'],
+            upsampling_depth=hparams['upsampling_depth'],
+            enc_kernel_size=hparams['enc_kernel_size'],
+            enc_num_basis=hparams['enc_num_basis'],
+            num_sources=hparams['n_sources'])
+else:
+    model = sudormrf_gc_v2.GroupCommSudoRmRf(
         in_audio_channels=2,
         out_channels=hparams['out_channels'],
         in_channels=hparams['in_channels'],

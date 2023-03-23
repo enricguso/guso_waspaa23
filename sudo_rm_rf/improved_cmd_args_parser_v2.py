@@ -72,6 +72,10 @@ def get_args():
                         help="""use anechoic+0.25*(noise+reverb) as target
                         """,
                         default=False)
+    parser.add_argument("--causal", action='store_true',
+                        help="""use smaller, causal model instead of sudormrf_gc_v2
+                        """,
+                        default=False)
     parser.add_argument("--online_mix", action='store_true',
                         help="""Shuffle sources and batch utterances for building
                         new mixtures during the train loop""",
