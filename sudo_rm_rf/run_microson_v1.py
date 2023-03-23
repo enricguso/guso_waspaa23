@@ -85,33 +85,34 @@ def normalize_tensor_wav(wav_tensor, eps=1e-8, std=None):
     return (wav_tensor - mean) / (std + eps)
 
 def log_single_bin(mixtures, targets, estimates, experiment, step):
-    estimate = estimates[0].detach().cpu().numpy()
-    mixture = mixtures[0].detach().cpu().numpy()
-    target = targets[0].detach().cpu().numpy()
+    for batch_utt in range(mixtures.shape[0]):
+        estimate = estimates[batch_utt].detach().cpu().numpy()
+        mixture = mixtures[batch_utt].detach().cpu().numpy()
+        target = targets[batch_utt].detach().cpu().numpy()
 
-    estimate = estimate / np.abs(estimate).max(-1, keepdims=True)
-    mixture = mixture / np.abs(mixture).max(-1, keepdims=True)
-    target = target / np.abs(target).max(-1, keepdims=True)
+        estimate = estimate / np.abs(estimate).max(-1, keepdims=True)
+        mixture = mixture / np.abs(mixture).max(-1, keepdims=True)
+        target = target / np.abs(target).max(-1, keepdims=True)
 
-    experiment.log_audio(
-                        estimate.T,
-                        sample_rate=hparams["fs"],
-                        file_name=tag+'estimate.wav',
-                        copy_to_tmp=True,
-                        step=step)
-    experiment.log_audio(
-                        mixture.T,
-                        sample_rate=hparams["fs"],
-                        file_name=tag+'mixture.wav',
-                        copy_to_tmp=True,
-                        step=step)
-    experiment.log_audio(
-                        target.T,
-                        sample_rate=hparams["fs"],
-                        file_name=tag+'target.wav',
-                        copy_to_tmp=True,
-                        step=step)
-
+        experiment.log_audio(
+                            estimate.T,
+                            sample_rate=hparams["fs"],
+                            file_name=tag+'_estimate_'+str(batch_utt)+'.wav',
+                            copy_to_tmp=True,
+                            step=step)
+        if step == 0:
+            experiment.log_audio(
+                                mixture.T,
+                                sample_rate=hparams["fs"],
+                                file_name=tag+'_mixture_'+str(batch_utt)+'.wav',
+                                copy_to_tmp=True,
+                                step=step)
+            experiment.log_audio(
+                                target.T,
+                                sample_rate=hparams["fs"],
+                                file_name=tag+'_target_'+str(batch_utt)+'.wav',
+                                copy_to_tmp=True,
+                                step=step)
 train_dataset = microson_v1_dataset('/home/ubuntu/Data/microson_v1', 'train', hparams['n_train'])
 val_dataset = microson_v1_dataset('/home/ubuntu/Data/microson_v1', 'dev', hparams['n_val'])
 test_dataset = microson_v1_dataset('/home/ubuntu/Data/microson_v1', 'test', hparams['n_test'])
@@ -139,7 +140,7 @@ else:
 os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(
     [cad for cad in hparams['cuda_available_devices']])
 
-model = sudormrf_gc_v2.GroupCommSudoRmRf(
+model = causal_improved_sudormrf.CausalSuDORMRF(
         in_audio_channels=2,
         out_channels=hparams['out_channels'],
         in_channels=hparams['in_channels'],
@@ -147,8 +148,7 @@ model = sudormrf_gc_v2.GroupCommSudoRmRf(
         upsampling_depth=hparams['upsampling_depth'],
         enc_kernel_size=hparams['enc_kernel_size'],
         enc_num_basis=hparams['enc_num_basis'],
-        num_sources=hparams['n_sources'],
-        group_size=16)
+        num_sources=hparams['n_sources'])
 
 numparams = 0
 for f in model.parameters():
@@ -257,13 +257,12 @@ for i in range(hparams['n_epochs']):
             l = SISDR([targets], [estimates])
             test_losses.append(l.detach())
 
-    experiment.log_metric(name = "tr_sisdr_mean", value= -torch.stack(train_losses).mean(), epoch=i)
-    experiment.log_metric(name = "tr_sisdr_std", value= -torch.stack(train_losses).std(), epoch=i)
-    experiment.log_metric(name = "val_sisdr_mean", value= -torch.stack(val_losses).mean(), epoch=i)
-    experiment.log_metric(name = "val_sisdr_std", value= -torch.stack(val_losses).std(), epoch=i)
-    experiment.log_metric(name = "tt_sisdr_mean", value= -torch.stack(test_losses).mean(), epoch=i)
-    experiment.log_metric(name = "tt_sisdr_std", value= -torch.stack(test_losses).std(), epoch=i)
-
+    experiment.log_metric(name = "tr_sisdr_mean", value= (-torch.stack(train_losses).mean()).cpu().detach().numpy(), epoch=i)
+    experiment.log_metric(name = "tr_sisdr_std", value= (torch.stack(train_losses).std()).cpu().detach().numpy(), epoch=i)
+    experiment.log_metric(name = "val_sisdr_mean", value= (-torch.stack(val_losses).mean()).cpu().detach().numpy(), epoch=i)
+    experiment.log_metric(name = "val_sisdr_std", value= (torch.stack(val_losses).std()).cpu().detach().numpy(), epoch=i)
+    experiment.log_metric(name = "tt_sisdr_mean", value= (-torch.stack(test_losses).mean()).cpu().detach().numpy(), epoch=i)
+    experiment.log_metric(name = "tt_sisdr_std", value= (torch.stack(test_losses).std()).cpu().detach().numpy(), epoch=i)
     log_single_bin(mixtures, targets, estimates, experiment, i)
 
     if hparams["save_checkpoint_every"] > 0:
