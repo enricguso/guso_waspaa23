@@ -65,22 +65,22 @@ def crop_echogram(anechoic_echogram):
                 anechoic_echogram[src, rec, band].order = anechoic_echogram[src, rec, band].order[:2,:]
     return anechoic_echogram
 
-def align_signals(s1,s2):
-    corr = sig.correlate(s1[:48000,1],s2[:48000,1],mode='full')
-    plt.figure()
-    plt.xcorr(1[:48000,1],s2[:48000,1])
-    plt.show()
-    # shift = np.argmax(np.abs(corr))
-    # print(shift)
-    # plt.figure()
-    # plt.plot(s1)
-    # plt.show()
-    # s1=s1[shift:,:]
-    # plt.figure()
-    # plt.plot(s1)
-    # plt.show()
-    s1=np.concatenate((s1,np.zeros((shift,2))),axis=0)
-    return s1,s2
+# def align_signals(s1,s2):
+#     corr = sig.correlate(s1[:48000,1],s2[:48000,1],mode='full')
+#     plt.figure()
+#     plt.xcorr(1[:48000,1],s2[:48000,1])
+#     plt.show()
+#     # shift = np.argmax(np.abs(corr))
+#     # print(shift)
+#     # plt.figure()
+#     # plt.plot(s1)
+#     # plt.show()
+#     # s1=s1[shift:,:]
+#     # plt.figure()
+#     # plt.plot(s1)
+#     # plt.show()
+#     s1=np.concatenate((s1,np.zeros((shift,2))),axis=0)
+#     return s1,s2
 
 
 def place_on_circle(head_pos,r,angle_deg):
@@ -213,6 +213,23 @@ def generate_scenes(sources_sigs,levels,mic_rirs,decoder):
         mix=np.array((sig_L_mix,sig_R_mix))
 
     return mix
+
+
+def synch_sigs(sig1,sig2):
+    sig1_out=np.zeros(sig1.shape)
+    sig2_out=np.zeros(sig2.shape)
+    corr = signal.correlate(sig1[:,0], sig2[:,0], 'full')
+    lag = signal.correlation_lags(len(sig1[:,0]), len(sig2[:,0]), mode='full')[np.argmax(corr)]
+    if lag > 0:
+        sig2=sig2[0:-lag, :]
+        sig1=sig1[lag:, :]
+    elif lag < 0:
+        sig2=sig2[-lag:, :]
+        sig1=sig1[0:lag, :]
+
+    sig1_out[:sig1.shape[0],:]=sig1
+    sig2_out[:sig2.shape[0],:]=sig2
+    return sig1_out,sig2_out
 
 def generate_sig_in_SH(source_sig,sh_mic_rir):
 # function to generate 1 source signal in spherical harmonics
