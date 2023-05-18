@@ -16,7 +16,7 @@ Code to replicate our WASPAA23 submission
 
 * Evaluate in terms of SISDR, HASPI, HASQI and MBSTOI
 
-![image](figures/results.png)
+<img src="figures/results.png" alt="isolated" width="440"/>
 
 ## Dependencies:
 For installation we recommend to create a virtual environment as follows:
@@ -59,7 +59,7 @@ Run ```debug_notebooks/debug_decoders.ipynb``` and choose a decoder by changing 
 
 >Generates ```meta_microson_v1.csv```.
 ### Generate the audio
-Edit paths and parameters (if needed) ate the end of ```generate_microsonv1.py``` script and then run it.
+Edit paths and parameters (if needed) at the end of ```generate_microsonv1.py``` script and then run it.
 We obtain the following wav files in ```output_dir```:
 * ```ane_ir```: the anechoic impulse response in binaural
 * ```anechoic```: the anechoic speech signal in binaural

@@ -14,5 +14,4 @@ MUSDBWAV_ROOT_PATH = '/home/ubuntu/Data/Music/MUSDB18wav'
 MUSDBWAV8K_ROOT_PATH = '/home/ubuntu/Data/Music/MUSDB18wav8k'
 FUSS_ROOT_PATH = '/home/ubuntu/Data/Fuss/fuss_dev/ssdata'
 
-#API_KEY = '4MedNCb6cMj06laY9jFn5pDpA'
-API_KEY = 'O1LMM1TV4H9vbT0CKTVlbRk3T'
+#API_KEY = 'xxxx'
