@@ -1,0 +1,153 @@
+{'train': None, 'val': None, 'test': None, 'train_val': None, 'n_train': 220701, 'n_val': 2408, 'n_test': 2385, 'n_train_val': 0, 'audio_timelength': 4.0, 'min_or_max': 'min', 'zero_pad_audio': True, 'normalize_audio': False, 'normalize_online': True, 'mild_target': False, 'causal': False, 'online_mix': True, 'n_channels': 1, 'min_num_sources': 1, 'max_num_sources': 4, 'separation_task': 'enh_noisyreverberant', 'batch_size': 2, 'n_epochs': 50, 'learning_rate': 0.001, 'divide_lr_by': 3.0, 'patience': 8, 'optimizer': 'adam', 'clip_grad_norm': 5.0, 'fs': 16000, 'cometml_tags': ['test'], 'experiment_name': None, 'project_name': 'microson_v1', 'cuda_available_devices': ['0'], 'n_jobs': 4, 'experiment_logs_path': None, 'metrics_logs_path': None, 'checkpoints_path': '/home/ubuntu/Data/enric_models/test', 'save_checkpoint_every': 1, 'out_channels': 512, 'in_channels': 256, 'num_blocks': 16, 'upsampling_depth': 5, 'group_size': 16, 'enc_kernel_size': 21, 'enc_num_basis': 512, 'att_dims': 256, 'att_n_heads': 4, 'att_dropout': 0.1, 'model_type': 'relu'}
+COMET INFO: Experiment is live on comet.com https://www.comet.com/enricguso/microson-v1/0d726e09f315468a809cb94621c41c17
+
+Trainable Parameters: 1181521
+Training SuDoRM-RF++ GC: 0d726e09f315468a809cb94621c41c17 - ['test'] || Epoch: 1/50
+  0%|          | 0/110351 [00:00<?, ?it/s]  0%|          | 1/110351 [00:05<167:51:57,  5.48s/it]  0%|          | 2/110351 [00:06<79:33:51,  2.60s/it]   0%|          | 3/110351 [00:06<51:15:40,  1.67s/it]  0%|          | 4/110351 [00:07<38:00:21,  1.24s/it]  0%|          | 5/110351 [00:07<30:34:30,  1.00it/s]  0%|          | 6/110351 [00:08<26:08:23,  1.17it/s]  0%|          | 7/110351 [00:08<23:19:27,  1.31it/s]  0%|          | 8/110351 [00:09<21:32:21,  1.42it/s]  0%|          | 9/110351 [00:10<20:16:32,  1.51it/s]  0%|          | 10/110351 [00:10<19:24:55,  1.58it/s]  0%|          | 11/110351 [00:11<18:51:45,  1.62it/s]  0%|          | 12/110351 [00:11<18:26:51,  1.66it/s]  0%|          | 13/110351 [00:12<18:10:21,  1.69it/s]  0%|          | 14/110351 [00:12<17:58:45,  1.70it/s]  0%|          | 15/110351 [00:13<17:49:47,  1.72it/s]  0%|          | 16/110351 [00:14<17:40:44,  1.73it/s]  0%|          | 17/110351 [00:14<17:37:28,  1.74it/s]  0%|          | 18/110351 [00:15<17:59:03,  1.70it/s]  0%|          | 19/110351 [00:15<17:47:43,  1.72it/s]  0%|          | 20/110351 [00:16<17:44:25,  1.73it/s]  0%|          | 21/110351 [00:16<17:46:03,  1.72it/s]  0%|          | 22/110351 [00:17<17:42:56,  1.73it/s]  0%|          | 23/110351 [00:18<17:51:47,  1.72it/s]  0%|          | 23/110351 [00:18<24:48:38,  1.24it/s]
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/comet.py", line 993, in _report_experiment_error
+    self._rest_api_client.update_experiment_error_status(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 3620, in update_experiment_error_status
+    return self.post_from_endpoint(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 2002, in post_from_endpoint
+    return self._result_from_http_method(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 2024, in _result_from_http_method
+    return method(url, payload, **kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 2105, in post
+    return super(RestApiClient, self).post(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 1959, in post
+    response = self.low_level_api_client.post(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 513, in post
+    return self.do(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 616, in do
+    response = session.request(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.8/http/client.py", line 1348, in getresponse
+    response.begin()
+  File "/usr/lib/python3.8/http/client.py", line 316, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.8/http/client.py", line 277, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.8/socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.8/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.8/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt
+
+Original exception was:
+Traceback (most recent call last):
+  File "run_microson_v1.py", line 223, in <module>
+    l.backward()
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/monkey_patching.py", line 324, in wrapper
+    return_value = original(*args, **kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/torch/_tensor.py", line 487, in backward
+    torch.autograd.backward(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/torch/autograd/__init__.py", line 200, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt
+COMET INFO: ---------------------------------------------------------------------------------------
+COMET INFO: Comet.ml Experiment Summary
+COMET INFO: ---------------------------------------------------------------------------------------
+COMET INFO:   Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : https://www.comet.com/enricguso/microson-v1/0d726e09f315468a809cb94621c41c17
+COMET INFO:   Metrics [count] (min, max):
+COMET INFO:     loss [3] : (-2.9718499183654785, 27.228376388549805)
+COMET INFO:   Others:
+COMET INFO:     Name : test
+COMET INFO:   Parameters:
+COMET INFO:     att_dims               : 256
+COMET INFO:     att_dropout            : 0.1
+COMET INFO:     att_n_heads            : 4
+COMET INFO:     audio_timelength       : 4.0
+COMET INFO:     batch_size             : 2
+COMET INFO:     causal                 : False
+COMET INFO:     cometml_tags           : ['test']
+COMET INFO:     cuda_available_devices : ['0']
+COMET INFO:     enc_num_basis          : 512
+COMET INFO:     experiment_logs_path   : 1
+COMET INFO:     experiment_name        : 1
+COMET INFO:     group_size             : 16
+COMET INFO:     learning_rate          : 0.001
+COMET INFO:     max_num_sources        : 4
+COMET INFO:     metrics_logs_path      : 1
+COMET INFO:     mild_target            : False
+COMET INFO:     min_num_sources        : 1
+COMET INFO:     min_or_max             : min
+COMET INFO:     model_type             : relu
+COMET INFO:     n_channels             : 1
+COMET INFO:     n_jobs                 : 4
+COMET INFO:     n_sources              : 1
+COMET INFO:     n_train_val            : 0
+COMET INFO:     normalize_audio        : False
+COMET INFO:     optimizer              : adam
+COMET INFO:     test                   : 1
+COMET INFO:     train                  : 1
+COMET INFO:     train_val              : 1
+COMET INFO:     val                    : 1
+COMET INFO:     zero_pad_audio         : True
+COMET INFO:   Uploads:
+COMET INFO:     environment details      : 1
+COMET INFO:     filename                 : 1
+COMET INFO:     git metadata             : 1
+COMET INFO:     git-patch (uncompressed) : 1 (104.97 KB)
+COMET INFO:     installed packages       : 1
+COMET INFO:     model graph              : 1
+COMET INFO:     os packages              : 1
+COMET INFO:     source_code              : 1 (11.90 KB)
+COMET INFO: 
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/experiment.py", line 893, in _on_end
+    self._report_summary()
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/experiment.py", line 779, in _report_summary
+    self.send_notification(notification_title, "finished", summary)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/_online.py", line 909, in send_notification
+    self.connection.send_notification(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 1100, in send_notification
+    r = self._low_level_http_client.post(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 513, in post
+    return self.do(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/comet_ml/connection.py", line 616, in do
+    response = session.request(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/ubuntu/enric/venvs/librinew/lib/python3.8/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.8/http/client.py", line 1348, in getresponse
+    response.begin()
+  File "/usr/lib/python3.8/http/client.py", line 316, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.8/http/client.py", line 277, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.8/socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.8/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.8/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt
