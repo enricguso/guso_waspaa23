@@ -17,11 +17,15 @@ import helpers as hlp
 import importlib
 importlib.reload(hlp);
 
-#a = df.iloc[i]
+# This script encapsulated in a method for multi-processing takes a dataframe row and stores the audio on disk
+# a = df.iloc[i]
 def process(a):
     try:
+        # take the head center coordinates from the dataframe and compute the ear positions. set mic coordinates there.
         mic = np.array(hlp.head_2_ku_ears(np.array([a.headC_x, a.headC_y, a.headC_z]),
                                             np.array([a.headOrient_azi,a.headOrient_ele])))
+        ##############################
+        # NOISE PROCESSING (NO SIMULATION, ONLY AUGMENTATION):
         # load noise:
         noise, _ = sf.read(pjoin(pjoin(pjoin(wham_path, 'wham_noise'), a.wham_split), a.noise_path))
 
@@ -44,7 +48,7 @@ def process(a):
             noise = noise[:, [1,0]]
 
         noise = noise.T
-
+        ###############################
         # load speech and crop at the 4s chunk that has more energy
         speech_folder = pjoin(pjoin(mls_path, a.mls_split), 'audio')
         speech, _ = sf.read(pjoin(pjoin(pjoin(speech_folder, str(a.speaker)), str(a.book)), a.speech_path))
@@ -53,6 +57,7 @@ def process(a):
         idx = idx_candidates[idx_candidates < (len(speech)-(4*a.fs_noise))][0]
         speech = speech[idx:idx+4*a.fs_noise]
 
+        # IR simulation
         room = np.array([a.room_x, a.room_y, a.room_z])
         rt60 = np.array([a.rt60])
         rt60 *= 0.5 #furniture absorption 
@@ -129,7 +134,7 @@ def process(a):
 
 if __name__ == '__main__':
     print('RIC-corrected dataset generation script. Microson_v1')
-    num_workers = 8
+    num_workers = 8 # number of CPU cores
 
     #   decoder_path = 'ku100_inear_test.mat'
     decoder_path = pjoin('decoders_ord10', 'RIC_Front_Omni_ALFE_Window_SinEQ_bimag.mat')
@@ -142,9 +147,10 @@ if __name__ == '__main__':
     fs_rir = 48000
     fs_target = 16000 
     ambi_order = 10
-    rims_d = .0
-    maxlim = 2.
+    rims_d = .0 # Displacement for Randomized Image Source method
+    maxlim = 2. # Maximum reverberation time
     band_centerfreqs=np.array([1000]) #change this for multiband
+    # load BiMagLS decoder from two sound fiels to HA binaural signals:
     decoder = mat73.loadmat(decoder_path)['hnm']
     decoder = np.roll(decoder,500,axis=0)
 
