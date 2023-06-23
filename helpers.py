@@ -229,7 +229,7 @@ def synch_sigs(sig1,sig2):
 
     sig1_out[:sig1.shape[0],:]=sig1
     sig2_out[:sig2.shape[0],:]=sig2
-    return sig1_out,sig2_out
+    return sig1_out,sig2_out, lag
 
 def generate_sig_in_SH(source_sig,sh_mic_rir):
 # function to generate 1 source signal in spherical harmonics

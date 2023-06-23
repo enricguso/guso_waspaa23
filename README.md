@@ -19,10 +19,7 @@ Code to replicate our WASPAA23 submission
 <img src="figures/results.png" alt="isolated" width="440"/>
 
 ## Dependencies:
-For installation we recommend to create a virtual environment as follows:
-```
-python -m venv <venv_name>
-```
+
 Then install dependencies. For the dataset creation:
 ```
 pip install numpy scipy mat73 jupyter soundfile pyrubberband matplotlib pandas ipykernel tqdm 
@@ -35,11 +32,6 @@ pip install comet_ml torch pyclarity seaborn
 Alternative, install specific versions from file with:
 ```
 pip install -r requirements.txt
-```
-
-Finally add the virtualenv kernel to jupyter if needed:
-```
-python -m ipykernel install --user --name <venv_name>
 ```
 
 ## DNN Dataset Generation
