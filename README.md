@@ -19,7 +19,7 @@ Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AI
 
 ## Dependencies:
 
-Then install dependencies. For the dataset creation:
+Install dependencies. For the dataset creation:
 ```
 pip install numpy scipy mat73 jupyter soundfile pyrubberband matplotlib pandas ipykernel tqdm 
 ```
@@ -28,7 +28,7 @@ And dependencies for the DNN training and evaluation:
 pip install comet_ml torch pyclarity seaborn
 ```
 
-Alternative, install specific versions from file with:
+Alternatively, install specific versions from file with:
 ```
 pip install -r requirements.txt
 ```
@@ -42,7 +42,7 @@ Generate a metadata dataframe for augmenting WHAM! to match the size of the spee
 <img src="figures/table.png" alt="isolated" width="340"/>
 
 Open jupyter notebook while choosing your environment.
-Run ```microson_v1_dataset_design.ipynb``` with your WHAM! and Multilingual LibriSpeech Spanish (MLSS) dataset paths.
+Run ```microson_v1_dataset_design.ipynb``` editing your WHAM! and Multilingual LibriSpeech Spanish (MLSS) dataset paths.
 >Generates ```meta_microson_v1.csv```.
 
 ### (Optional) Normal hearing training:
@@ -71,35 +71,38 @@ If you want to replicate our exact configurations, run the shell script recipes 
 * DNN: ```m1_alldata_normal.sh``` for a non-causal model where ```target=anechoic```
 * DNN-C: ```m4_alldata_normal_causal.sh``` for a causal model where ```target=anechoic```
 
+Edit the ```checkpoints_path``` and then run at each server with ```sh <script_name>.sh```. The biggest model took about 20 days in a V100 instance.
+
+Once training is complete, take the best (last in this case) epoch. We provide ours in ```pretrained_models```.
+
 We also provide two additional scripts for training "mild" enhancers: 
 * ```m5_alldata_mild_causal``` causal where ```target = anechoic + 0.25*(reverb + noise)```
 * ```m3_alldata_mild.sh``` non-causal where ```target = anechoic + 0.25*(reverb + noise)```
 
-Edit the ```checkpoints_path``` and then run at each server with ```sh <script_name>.sh```. The biggest model took about 20days in a V100 instance.
+## Test Set of Complex Situations:
 
-Once training is complete, take the best (last in this case) epoch. We provide ours in ```pretrained_models```.
+>Ambisonics situations
 
-## Test Set of Complex Situations
 To reproduce the rest of the paper you probably will have to adapt the remaining scripts to your particular case. We upload them anyway as templates.
 
 Download ```02_Office_MOA_31ch.wav```, ```07_Cafe_1_MOA_31ch.wav'``` and ```09_Dinner_party_MOA_31ch.wav'``` from the Ambisonics Recordings of Typical environments (ARTE) Database and place in a directory:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2261633.svg)](https://doi.org/10.5281/zenodo.2261633)
 
-Run ```listening_test_scenes.ipynb``` to generate the Ambisonics signals..
+Run ```listening_test_scenes.ipynb``` to generate the Ambisonics signals.
 
 Then decode the resulting ambisonic signals to speaker signals using the tool that suits your particular speaker setup (e.g. [AllRAD decoding](https://www.aes.org/tmpFiles/elib/20230717/16554.pdf)) and normalize so that all utterances in the speaker signal test set have the same [energy](https://en.wikipedia.org/wiki/Energy_(signal_processing)) overall.
 
 Calibrate the speaker setup to equivalent 70dBspl and record the different HA in bypass (without beamforming and other traditional enhancement methods) and enabling them (enabled).
 
-Crop these recordings with ```recordings_crop.ipynb``` and process with ```recordings_process.ipynb``` while adjusting the paths if necessary.
+Crop these recordings with ```recordings_crop.ipynb```.
 
-Finally run ```recordings_analysis.ipynb``` for computing the metrics and generating the plots. 
+>DNN inference: process with ```recordings_process.ipynb``` while adjusting the paths if necessary.
 
-# Aknowledgement, Copyright and License
+>Evaluation: compute metrics by running ```recordings_analysis.ipynb``` and generating the plots. 
 
-
-MIT License.
+## Aknowledgement, Copyright and License
+MIT License, check  ```LICENSE.txt```
 
 Copyright © 2023, Eurecat Centre Tecnològic de Catalunya. All rights reserved.
 
