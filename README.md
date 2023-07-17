@@ -1,4 +1,4 @@
-# microson_v1
+# GUSO_WASPAA23
 Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AIDS AND DNN-BASED BINAURAL SPEECH ENHANCEMENT IN COMPLEX ACOUSTIC SCENES, where we benchmark traditionald DNN beamforming techniques against DNN-based enhancement on real and commercially-available Hearing Aid devices.
 
 >Enric Gusó enric.guso@eurecat.org
@@ -47,8 +47,8 @@ Run ```microson_v1_dataset_design.ipynb``` with your WHAM! and Multilingual Libr
 
 ### (Optional) Normal hearing training:
 We provide two 10-th order Ambisonics to Binaural decoders, one for generating synthetic normal hearing binaural datasets and the default one for simulating Hearing Aids:
-* (default) decoders_ord10/RIC_Front_Omni_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy wearing a hearing aids device.
-* decoders_ord10/KU100_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy.
+* (default) ```decoders_ord10/RIC_Front_Omni_ALFE_Window_sinEQ_bimag.mat```: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy wearing a hearing aids device.
+* ```decoders_ord10/KU100_ALFE_Window_sinEQ_bimag.mat```: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy.
 
 ### Generate the audio
 Download [MultiLingual LibriSpeech Spanish](https://www.openslr.org/94/) and [WHAM!](https://wham.whisper.ai).
@@ -67,9 +67,11 @@ We obtain the following wav files in ```output```:
 Go to ```sudo_rm_rf``` folder.
 Configure your CometML API Key and the dataset path you set in ```output``` in ```__config__.py``` file. 
 
-If you want to replicate the exact configurations, run the shell script recipes for each model:
+If you want to replicate our exact configurations, run the shell script recipes for each model:
 * DNN: ```m1_alldata_normal.sh``` for a non-causal model where ```target=anechoic```
 * DNN-C: ```m4_alldata_normal_causal.sh``` for a causal model where ```target=anechoic```
+
+We also provide two additional scripts for training "mild" enhancers: 
 * ```m5_alldata_mild_causal``` causal where ```target = anechoic + 0.25*(reverb + noise)```
 * ```m3_alldata_mild.sh``` non-causal where ```target = anechoic + 0.25*(reverb + noise)```
 
