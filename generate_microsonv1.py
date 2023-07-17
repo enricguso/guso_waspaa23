@@ -16,6 +16,20 @@ from multiprocessing import Pool
 import helpers as hlp
 import importlib
 importlib.reload(hlp);
+import argparse
+
+parser = argparse.ArgumentParser(
+        description='Dataset Generation Argument Parser')
+parser.add_argument("--mls_path", type=str,
+                help="""Folder containing the MultiLingual LibriSpeech Dataset.""",
+                default=None)
+parser.add_argument("--wham_path", type=str,
+                help="""Folder containing the WHAM! Dataset.""",
+                default=None)
+parser.add_argument("--output", type=str,
+                help="""Directory where to save processed wavs.""",
+                default=None)
+args = parser.parse_args()
 
 # This script encapsulated in a method for multi-processing takes a dataframe row and stores the audio on disk
 # a = df.iloc[i]
@@ -139,9 +153,10 @@ if __name__ == '__main__':
     #   decoder_path = 'ku100_inear_test.mat'
     decoder_path = pjoin('decoders_ord10', 'RIC_Front_Omni_ALFE_Window_SinEQ_bimag.mat')
 
-    mls_path = '/home/ubuntu/Data/mls_spanish'
-    wham_path = '/home/ubuntu/Data/wham'
-    output_path = '/home/ubuntu/Data/microson_v1/'
+    mls_path = args.mls_path #'/home/ubuntu/Data/mls_spanish'
+    wham_path = args.wham_path #'/home/ubuntu/Data/wham'
+    output_path = args.output_path #'/home/ubuntu/Data/microson_v1/'
+
     df_path = 'meta_microson_v1.csv'
     df = pd.read_csv(df_path)
     fs_rir = 48000

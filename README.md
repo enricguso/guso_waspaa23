@@ -1,18 +1,17 @@
 # microson_v1
-Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AIDS AND DNN-BASED BINAURAL SPEECH ENHANCEMENT IN COMPLEX ACOUSTIC SCENES, where we benchmark traditionald DNN beamforming techniques against DNN-based enhancement.
+Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AIDS AND DNN-BASED BINAURAL SPEECH ENHANCEMENT IN COMPLEX ACOUSTIC SCENES, where we benchmark traditionald DNN beamforming techniques against DNN-based enhancement on real and commercially-available Hearing Aid devices.
+
 >Enric Gusó enric.guso@eurecat.org
 
 >Joanna Luberazdka joanna.luberadzka@eurecat.org
 
-Code to replicate our WASPAA23 submission
-
 * Generate a Hearing Aid binaural speech enhancement (denoising + dereverberation) dataset with speech from Multilingual LibriSpeech Spanish + WHAM! binaural noises.
 
-* Train and evaluate a Sudo RM-RF real-time oriented enhancement DNN on that dataset.
+* Train and evaluate two [Sudo RM-RF](https://github.com/etzinis/sudo_rm_rf) enhancement DNNs on that dataset: a causal and a non-causal version.
 
-* Generate a small test set of 10-th order Ambisonics situations that we use for recording different Hearing Aids in bypass and using the HA enhancement.
+* Generate a small test set of 10-th order Ambisonics situations that we use for recording different Hearing Aids in with their traditional features in bypass and also using each HA enhancement.
 
-* Process the recordings in bypass with a Causal DNN (DNN-C) and a non-causal upper baseline (DNN).
+* Process the recordings in bypass with the trained Causal DNN (DNN-C) and a non-causal model (DNN).
 
 * Evaluate in terms of SISDR, HASPI, HASQI and MBSTOI
 
@@ -36,7 +35,7 @@ pip install -r requirements.txt
 
 ## DNN Dataset Generation
 
-### Generate metadata for the dataset
+### Design the dataset: generate metadata
 
 Generate a metadata dataframe for augmenting WHAM! to match the size of the speech dataset. 
 
@@ -44,46 +43,53 @@ Generate a metadata dataframe for augmenting WHAM! to match the size of the spee
 
 Open jupyter notebook while choosing your environment.
 Run ```microson_v1_dataset_design.ipynb``` with your WHAM! and Multilingual LibriSpeech Spanish (MLSS) dataset paths.
-### Listen to the different decoders (Optional)
-Run ```debug_notebooks/debug_decoders.ipynb``` and choose a decoder by changing the decoder path between:
-* decoders_ord10/KU100_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy.
-* decoders_ord10/RIC_Front_Omni_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy wearing a hearing aids device.
-
 >Generates ```meta_microson_v1.csv```.
+
+### (Optional) Normal hearing training:
+We provide two 10-th order Ambisonics to Binaural decoders, one for generating synthetic normal hearing binaural datasets and the default one for simulating Hearing Aids:
+* (default) decoders_ord10/RIC_Front_Omni_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy wearing a hearing aids device.
+* decoders_ord10/KU100_ALFE_Window_sinEQ_bimag.mat: 50-point HRIRs 10th-order Ambisonics to Binaural decoder from the KU100 dummy.
+
 ### Generate the audio
-Edit paths and parameters (if needed) at the end of ```generate_microsonv1.py``` script and then run it.
-We obtain the following wav files in ```output_dir```:
+Download [MultiLingual LibriSpeech Spanish](https://www.openslr.org/94/) and [WHAM!](https://wham.whisper.ai).
+Run ```generate_microsonv1.py``` providing the paths to both datasets and the desired output path with:
+``` python generate_microsonv1.py --mls_path <path to MLSS> --wham_path <path to WHAM!> --output <dataset directorty>```.
+
+We obtain the following wav files in ```output```:
 * ```ane_ir```: the anechoic impulse response in binaural
 * ```anechoic```: the anechoic speech signal in binaural
 * ```reverberant```: the reverberant speech signal in binaural
 * ```ir```: the reverberant impulse response in binaural
 * ```mono_ir```: the reverberant impulse response in mono
 * ```noise```: a corresponding augmented chunk from WHAM!
+
 ## Model training
-
 Go to ```sudo_rm_rf``` folder.
-Configure your CometML API Key in ```__config__.py``` file. Also adjust the output (checkpoints) path for each model:
-* ```m1_alldata_normal.sh``` for a non-causal model where ```target=anechoic```
-* ```m3_alldata_mild.sh``` non-causal where ```target = anechoic + 0.25*(reverb + noise)```
-* ```m4_alldata_normal_causal.sh``` for a causal model where ```target=anechoic```
+Configure your CometML API Key and the dataset path you set in ```output``` in ```__config__.py``` file. 
+
+If you want to replicate the exact configurations, run the shell script recipes for each model:
+* DNN: ```m1_alldata_normal.sh``` for a non-causal model where ```target=anechoic```
+* DNN-C: ```m4_alldata_normal_causal.sh``` for a causal model where ```target=anechoic```
 * ```m5_alldata_mild_causal``` causal where ```target = anechoic + 0.25*(reverb + noise)```
+* ```m3_alldata_mild.sh``` non-causal where ```target = anechoic + 0.25*(reverb + noise)```
 
-Then run (the biggest model took about 20days in a DATURA V100 instance) at each server with ```sh <script_name>.sh```
+Edit the ```checkpoints_path``` and then run at each server with ```sh <script_name>.sh```. The biggest model took about 20days in a V100 instance.
 
-Once training is complete, pick the best epoch (by visual inspection) from the checkpoints folder (should always be the last one in this case.)
+Once training is complete, take the best (last in this case) epoch. We provide ours in ```pretrained_models```.
 
 ## Test Set of Complex Situations
+To reproduce the rest of the paper you probably will have to adapt the remaining scripts to your particular case. We upload them anyway as templates.
 
 Download ```02_Office_MOA_31ch.wav```, ```07_Cafe_1_MOA_31ch.wav'``` and ```09_Dinner_party_MOA_31ch.wav'``` from the Ambisonics Recordings of Typical environments (ARTE) Database and place in a directory:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2261633.svg)](https://doi.org/10.5281/zenodo.2261633)
 
-Run ```listening_test_scenes.ipynb``` twice. Firstly as it is, and then changing the ```tag``` variable from ```normal```to ```inverse``` at the beggining of the notebook.
+Run ```listening_test_scenes.ipynb``` to generate the Ambisonics signals..
 
-Then decode the resulting ambisonic signals to speaker signals using the tool that suits your particular speaker setup (e.g. AllRAD) and normalize so that all utterances in the speaker signal test set have the same energy overall.
+Then decode the resulting ambisonic signals to speaker signals using the tool that suits your particular speaker setup (e.g. [AllRAD decoding](https://www.aes.org/tmpFiles/elib/20230717/16554.pdf)) and normalize so that all utterances in the speaker signal test set have the same [energy](https://en.wikipedia.org/wiki/Energy_(signal_processing)) overall.
 
-Calibrate the speaker setup to 70dB and record the different HA in bypass (without beamforming and other traditional enhancement methods) and enabling them (enabled).
+Calibrate the speaker setup to equivalent 70dBspl and record the different HA in bypass (without beamforming and other traditional enhancement methods) and enabling them (enabled).
 
 Crop these recordings with ```recordings_crop.ipynb``` and process with ```recordings_process.ipynb``` while adjusting the paths if necessary.
 
-Finally run ```recordings_analysis_bintarget.ipynb``` for computing the metrics and generating the plots. Results are stored in ```results.csv```.
+Finally run ```recordings_analysis.ipynb``` for computing the metrics and generating the plots. 
