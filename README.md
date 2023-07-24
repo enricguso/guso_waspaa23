@@ -1,19 +1,23 @@
 # GUSO_WASPAA23
-Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AIDS AND DNN-BASED BINAURAL SPEECH ENHANCEMENT IN COMPLEX ACOUSTIC SCENES, where we benchmark traditionald DNN beamforming techniques against DNN-based enhancement on real and commercially-available Hearing Aid devices.
+Code to replicate our WASPAA23 submission: AN OBJECTIVE EVALUATION OF HEARING AIDS AND DNN-BASED BINAURAL SPEECH ENHANCEMENT IN COMPLEX ACOUSTIC SCENES, where we benchmark real commercially-available Hearing Aid (HA) devices and their traditional enhancing methods against DNN-based postfilters.
 
 >Enric Gusó enric.guso@eurecat.org
 
 >Joanna Luberazdka joanna.luberadzka@eurecat.org
 
-* Generate a Hearing Aid binaural speech enhancement (denoising + dereverberation) dataset with speech from Multilingual LibriSpeech Spanish + WHAM! binaural noises.
+In this repository we provide:
 
-* Train and evaluate two [Sudo RM-RF](https://github.com/etzinis/sudo_rm_rf) enhancement DNNs on that dataset: a causal and a non-causal version.
+* SOFA files with 50-point pseudo-anechoic HRTFs of a KU100 dummy head, with and without wearing a HA.
+* 10-th order Ambisonics to Binaural decoders for both SOFA files.
+* Code for generating a binaural speech enhancement (denoising + dereverberation) dataset with speech from [MultiLingual LibriSpeech Spanish](https://www.openslr.org/94/) + [WHAM!](https://wham.whisper.ai) binaural noises. Dataset can be for normal hearing or for HA depending on the decoder.
 
-* Generate a small test set of 10-th order Ambisonics situations that we use for recording different Hearing Aids in with their traditional features in bypass and also using each HA enhancement.
+* Code for training and evaluating two [Sudo RM-RF](https://github.com/etzinis/sudo_rm_rf) enhancement DNNs on that dataset: a causal and a non-causal version. We also provide weights in ```pretrained_models```.
 
-* Process the recordings in bypass with the trained Causal DNN (DNN-C) and a non-causal model (DNN).
+* Code for generating a small test set of 10-th order Ambisonics situations. In the paper these are used for recording different Hearing Aids with their traditional features in bypass and also using each HA enhancement.
 
-* Evaluate in terms of SISDR, HASPI, HASQI and MBSTOI
+* DNN inference template script: a template on how to process the recordings in bypass with the trained Causal DNN (DNN-C) and a non-causal model (DNN).
+
+* Code to evaluate in terms of SISDR, HASPI, HASQI and MBSTOI.
 
 <img src="figures/results.png" alt="isolated" width="440"/>
 
@@ -37,7 +41,7 @@ pip install -r requirements.txt
 
 ### Design the dataset: generate metadata
 
-Generate a metadata dataframe for augmenting WHAM! to match the size of the speech dataset. 
+Generate a metadata dataframe for augmenting [WHAM!](https://wham.whisper.ai) to match the size of the speech dataset. 
 
 <img src="figures/table.png" alt="isolated" width="340"/>
 
@@ -61,7 +65,7 @@ We obtain the following wav files in ```output```:
 * ```reverberant```: the reverberant speech signal in binaural
 * ```ir```: the reverberant impulse response in binaural
 * ```mono_ir```: the reverberant impulse response in mono
-* ```noise```: a corresponding augmented chunk from WHAM!
+* ```noise```: a corresponding augmented chunk from [WHAM!](https://wham.whisper.ai)
 
 ## Model training
 Go to ```sudo_rm_rf``` folder.
@@ -107,5 +111,3 @@ MIT License, check  ```LICENSE.txt```
 Copyright © 2023, Eurecat Centre Tecnològic de Catalunya. All rights reserved.
 
 The research leading to these results has received funding from the European union's Horizon Europe programme under grant agreement No 101017884 - GuestXR project.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal with the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimers in the documentation and/or other materials provided with the distribution. Neither the names of Computational Audio Group, University of Illinois at Urbana-Champaign, nor the names of its contributors may be used to endorse or promote products derived from this Software without specific prior written permission. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
