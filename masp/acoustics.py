@@ -101,7 +101,8 @@ def find_abs_coeffs_from_rt(room, rt60_target, abs_wall_ratios=None):
     for nb in range(nBands):
         rt60 = rt60_target[nb]
         fmin = lambda alpha: np.abs(rt60 - get_rt_sabine(alpha, room, abs_wall_ratios))
-        alpha = scipy.optimize.fmin(func=fmin, x0=0.0001, disp=False)
+#        We bound the optimization as sabine coeffs must be [0,1]
+        alpha = scipy.optimize.fminbound(func=fmin, x1=0, x2=1, disp=False)        
         rt60_true[nb] = rt60 + fmin(alpha)
         alpha_walls[nb,:] = alpha * abs_wall_ratios
 
@@ -155,7 +156,7 @@ def get_rt_sabine(alpha, room, abs_wall_ratios):
 
     # Mean absorption
     a_mean = np.sum( (w * h * a_x) + (l * h * a_y) + (l * w * a_z) ) / Stot
-    rt60 = (55.25 * V) / ( c * Stot * a_mean )
+    rt60 = (24 * np.log(10) * V) / ( c * Stot * a_mean )
 
     return rt60
 
