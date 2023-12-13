@@ -142,7 +142,7 @@ def rec_module_sh(echograms, sh_orders, head_orient):
                 polar += (head_orient[1] * np.pi / 180)
                 ###############
                 sh_gains = get_sh(int(sh_orders[nr]), np.asarray([azi, polar]).transpose(), 'real')
-                print(sh_gains)
+                #print(sh_gains)
                 # rec_echograms[ns, nr].value = sh_gains * echograms[ns, nr].value[:,np.newaxis]
                 rec_echograms[ns, nr].value = sh_gains * echograms[ns, nr].value
 
