@@ -80,6 +80,7 @@ def apply_absorption(echogram, alpha, limits=None):
         _validate_ndarray_1D('limits', limits, size=nBands, positive=True)
 
     abs_echograms = np.empty(nBands, dtype=Echogram)
+
     if limits is None:
         for i in range(nBands):
             abs_echograms[i] = copy.copy(echogram)
@@ -87,7 +88,6 @@ def apply_absorption(echogram, alpha, limits=None):
         for nb in range(nBands):
             # Find index of last echogram time element smaller than the given limit
             idx_limit = np.arange(len(echogram.time))[echogram.time < limits[nb]][-1]
-            #idx_limit = 63
             # idx_limit = echogram.time[echogram.time < limits[nb]].size
             abs_echograms[nb] = Echogram(value=echogram.value[:idx_limit+1],
                                          time=echogram.time[:idx_limit+1],

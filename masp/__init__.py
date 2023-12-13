@@ -6,7 +6,6 @@ from .compute_echograms import compute_echograms_mic
 from .compute_echograms import compute_echograms_sh
 from .render_rirs import render_rirs_array
 from .render_rirs import render_rirs_mic
-from .render_rirs import render_rirs_mic_mp
 from .render_rirs import render_rirs_sh
 from .render_rirs import render_quantised
 from .render_rirs import render_rirs # private

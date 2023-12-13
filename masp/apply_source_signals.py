@@ -131,7 +131,7 @@ def apply_source_signals_mic(mic_rirs, src_sigs):
     mic_sigs = np.zeros((L_sig + L_rir - 1, nRec))
     for nr in range(nRec):
         for ns in range(nSrc):
-            #print('Convolving with source signal: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print('Convolving with source signal: Source ' + str(ns) + ' - Receiver ' + str(nr))
             mic_sigs[:, nr] = mic_sigs[:, nr] + scipy.signal.fftconvolve(mic_rirs[:, nr, ns], src_sigs[:, ns])
 
     return mic_sigs
@@ -184,4 +184,3 @@ def apply_source_signals_sh(sh_rirs, src_sigs):
 
     # return sh_sigs, src_sh_sigs
     return sh_sigs
-

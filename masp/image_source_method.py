@@ -39,9 +39,9 @@ from masp.validate_data_types import _validate_ndarray_1D, _validate_int, _valid
     _validate_echogram, _validate_string
 from .echogram import Echogram
 from masp.utils import C, c
-import time
 
-def ims_coreMtx(room, source, receiver, type, typeValue, rand):
+
+def ims_coreMtx(room, source, receiver, type, typeValue):
     """
     Compute echogram by image source method.
 
@@ -57,8 +57,6 @@ def ims_coreMtx(room, source, receiver, type, typeValue, rand):
         Restriction type: 'maxTime' or 'maxOrder'
     typeValue: int or float
         Value of the chosen restriction.
-    rand: float
-        displacement (in meters) of the sources for Randomized Image Source Method
 
     Returns
     -------
@@ -109,12 +107,12 @@ def ims_coreMtx(room, source, receiver, type, typeValue, rand):
     rec[1] = w / 2 - receiver[1]
     rec[2] = receiver[2] - h / 2
 
-    if type == 'maxOrder':
+    if type is 'maxOrder':
         maxOrder = typeValue
-        echogram = ims_coreN(room, src, rec, maxOrder, rand)
-    elif type == 'maxTime':
+        echogram = ims_coreN(room, src, rec, maxOrder)
+    elif type is 'maxTime':
         maxDelay = typeValue
-        echogram = ims_coreT(room, src, rec, maxDelay, rand)
+        echogram = ims_coreT(room, src, rec, maxDelay)
 
     # Sort reflections according to propagation time
     idx = np.argsort(echogram.time)
@@ -126,7 +124,7 @@ def ims_coreMtx(room, source, receiver, type, typeValue, rand):
     return echogram
 
 
-def ims_coreN(room, src, rec, N, rand):
+def ims_coreN(room, src, rec, N):
     """
     Compute echogram by image source method, under reflection order restriction
 
@@ -140,8 +138,6 @@ def ims_coreN(room, src, rec, N, rand):
         Receiver position in cartesian coordinates. Dimension = (3) [x, y, z].
     N : int
         Maximum reflection order.
-    rand: float
-        displacement (in meters) of the sources for Randomized Image Source Method
 
     Returns
     -------
@@ -179,7 +175,6 @@ def ims_coreN(room, src, rec, N, rand):
     _validate_ndarray_1D('receiver', rec, size=C, limit=[-room/2,room/2])
     _validate_int('N', N, positive=True)
 
-    print(rand)
     # i,j,k indices for calculation in x,y,z respectively
     r = np.arange(-N, N+1)
     xx, yy, zz = np.meshgrid(r, r, r)
@@ -202,7 +197,6 @@ def ims_coreN(room, src, rec, N, rand):
     s_d = np.sqrt(np.power(s_x,2) + np.power(s_y,2) + np.power(s_z,2))
     # Reflection propagation time
     s_t = s_d/c
-
     # Reflection propagation attenuation - if distance is <1m
     # set at attenuation at 1 to avoid amplification
     s_att = np.empty(s_d.size)
@@ -218,7 +212,7 @@ def ims_coreN(room, src, rec, N, rand):
     return reflections
 
 
-def ims_coreT(room, src, rec, maxTime, rand):
+def ims_coreT(room, src, rec, maxTime):
     """
     Compute echogram by image source method, under maxTime restriction
 
@@ -232,8 +226,6 @@ def ims_coreT(room, src, rec, maxTime, rand):
         Receiver position in cartesian coordinates. Dimension = (3) [x, y, z].
     maxTime : float
         Maximum echogram computation time.
-    rand: float
-        displacement (in meters) of the sources for Randomized Image Source Method
 
     Returns
     -------
@@ -290,33 +282,20 @@ def ims_coreT(room, src, rec, maxTime, rand):
     s_x = i*room[0] + np.power(-1.,i)*src[0] - rec[0]
     s_y = j*room[1] + np.power(-1.,j)*src[1] - rec[1]
     s_z = k*room[2] + np.power(-1.,k)*src[2] - rec[2]
-
     # Distance
     s_d = np.sqrt(np.power(s_x,2) + np.power(s_y,2) + np.power(s_z,2))
-    first_ref_dis_range = np.min(s_d) + np.linalg.norm(np.array([rand]*3))
-    mask = np.array([int(x) for x in s_d > first_ref_dis_range])
-    d_x = np.random.uniform(-rand, rand, s_x.shape)
-    d_y = np.random.uniform(-rand, rand, s_y.shape)
-    d_z = np.random.uniform(-rand, rand, s_z.shape)
-    #d_x[direct_sound_idx], d_y[direct_sound_idx], d_z[direct_sound_idx] = 0,0,0
-    s_x += d_x * mask
-    s_y += d_y * mask
-    s_z += s_z * mask
 
     # Bypass image sources with d > dmax
-    boundary = s_d < d_max
-    i = i[boundary]
-    j = j[boundary]
-    k = k[boundary]
-    s_x = s_x[boundary]
-    s_y = s_y[boundary]
-    s_z = s_z[boundary]
-    s_d = s_d[boundary]
+    i = i[s_d < d_max]
+    j = j[s_d < d_max]
+    k = k[s_d < d_max]
+    s_x = s_x[s_d < d_max]
+    s_y = s_y[s_d < d_max]
+    s_z = s_z[s_d < d_max]
+    s_d = s_d[s_d < d_max]
 
-    # Re-calculate distance now that coords are definitive
-    s_d = np.sqrt(np.power(s_x,2) + np.power(s_y,2) + np.power(s_z,2))
+    # Reflection propagation time
     s_t = s_d/c
-
     # Reflection propagation attenuation - if distance is <1m
     # set at attenuation at 1 to avoid amplification
     s_att = np.zeros(s_d.size)
@@ -328,6 +307,5 @@ def ims_coreT(room, src, rec, maxTime, rand):
                            time=s_t,
                            order=np.asarray(np.stack([i, j, k], axis=1), dtype=int),
                            coords=np.stack([s_x, s_y, s_z], axis=1))
-
 
     return reflections

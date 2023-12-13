@@ -36,7 +36,6 @@
 import numpy as np
 import scipy.signal
 import copy
-from multiprocessing import Pool
 
 from masp.echogram import Echogram
 from masp.quantise import get_echo2gridMap, quantise_echogram
@@ -215,18 +214,14 @@ def render_rirs_mic(echograms, band_centerfreqs, fs):
     for ns in range(nSrc):
         for nr in range(nRec):
 
-            #print('Rendering echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print('Rendering echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
             tempIR = np.zeros((L_rir, nBands))
             for nb in range(nBands):
                 tempIR[:, nb] = np.squeeze(render_rirs(echograms[ns, nr, nb], endtime, fs, fractional))
 
-            #print('     Filtering and combining bands')
-
+            print('     Filtering and combining bands')
             rirs[:, nr, ns] = filter_rirs(tempIR, band_centerfreqs, fs).squeeze()
 
-    # Correct a delay that appears when using multi-band t60s, caused by the filterbank
-    if nBands > 1:
-        rirs = rirs[L_fbank//2:, :, :]
     return rirs
 
 
@@ -299,89 +294,19 @@ def render_rirs_sh(echograms, band_centerfreqs, fs):
     for ns in range(nSrc):
         for nr in range(nRec):
 
-            #print('Rendering echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print('Rendering echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
             nSH = np.shape(echograms[ns, nr, 0].value)[1]
 
             tempIR = np.zeros((L_rir, nSH, nBands))
             for nb in range(nBands):
                 tempIR[:, :, nb] = render_rirs(echograms[ns, nr, nb], endtime, fs, fractional)
 
-            #print('     Filtering and combining bands')
+            print('     Filtering and combining bands')
             for nh in range(nSH):
                 rirs[:, nh, nr, ns] = filter_rirs(tempIR[:, nh, :], band_centerfreqs, fs).squeeze()
     return rirs
 
-def render_rirs_mic_mp(echograms, band_centerfreqs, fs):
-    """
-    Render a mic echogram array into an impulse response matrix with multiprocessing.
-    Computes each sub-band RIR in a separate CPU process.
-    Speedups are of 145% avg with large RT60s
 
-    Parameters
-    ----------
-    echograms : ndarray, dtype = Echogram
-        Target echograms. Dimension = (nSrc, nRec, nBands)
-    band_centerfreqs : ndarray
-        Center frequencies of the filterbank. Dimension = (nBands)
-    fs : int
-        Target sampling rate
-
-    Returns
-    -------
-    ir : ndarray
-        Rendered echograms. Dimension = (M, nRec, nSrc)
-
-    Raises
-    -----
-    TypeError, ValueError: if method arguments mismatch in type, dimension or value.
-
-    Notes
-    -----
-    The highest center frequency must be at most equal to fs/2, in order to avoid aliasing.
-    The lowest center frequency must be at least equal to 30 Hz.
-    Center frequencies must increase monotonically.
-
-    TODO: expose fractional, L_filterbank as parameter?
-    """
-
-    nSrc = echograms.shape[0]
-    nRec = echograms.shape[1]
-    nBands = echograms.shape[2]
-    _validate_echogram_array(echograms)
-    _validate_int('fs', fs, positive=True)
-    _validate_ndarray_1D('f_center', band_centerfreqs, positive=True, size=nBands, limit=[30,fs/2])
-
-    # Sample echogram to a specific sampling rate with fractional interpolation
-    fractional = True
-
-    # Decide on number of samples for all RIRs
-    endtime = 0
-    for ns in range(nSrc):
-        for nr in range(nRec):
-            temptime = echograms[ns, nr, 0].time[-1]
-            if temptime > endtime:
-                endtime = temptime
-
-    L_rir = int(np.ceil(endtime * fs))
-    L_fbank = 1000 if nBands > 1 else 0
-    L_tot = L_rir + L_fbank
-
-    # Render responses and apply filterbank to combine different decays at different bands
-    rirs = np.empty((L_tot, nRec, nSrc))
-    for ns in range(nSrc):
-        for nr in range(nRec):
-            tempIR = np.zeros((L_rir, nBands))
-            with Pool(nBands) as pool:
-                items = [(echograms[ns, nr, i], endtime, fs, fractional) for i in range(nBands)]
-                result = pool.starmap(render_rirs, items)
-            for i in range(nBands):
-                tempIR[:, i] = result[i].squeeze()
-
-            rirs[:, nr, ns] = filter_rirs(tempIR, band_centerfreqs, fs).squeeze()
-    # Correct a delay that appears when using multi-band t60s, caused by the filterbank
-    if nBands > 1:
-        rirs = rirs[L_fbank//2:, :, :]
-    return rirs
 
 
 def render_rirs(echogram, endtime, fs, fractional=True):
@@ -564,7 +489,7 @@ def filter_rirs(rir, f_center, fs):
         filters = np.zeros((order + 1, nBands))
         for i in range(nBands):
             if i == 0:
-                fl = 30.
+                fl = 30. 
                 fh = np.sqrt(f_center[i] * f_center[i + 1])
                 wl = fl / (fs / 2.)
                 wh = fh / (fs / 2.)
@@ -579,9 +504,9 @@ def filter_rirs(rir, f_center, fs):
                 wl = fl / (fs / 2.)
                 wh = fh / (fs / 2.)
                 filters[:, i] = scipy.signal.firwin(order + 1, [wl, wh], pass_zero='bandpass')
-
+        
         temp_rir = np.append(rir, np.zeros((order, nBands)), axis=0)
         rir_filt = scipy.signal.fftconvolve(filters, temp_rir, axes=0)[:temp_rir.shape[0],:]
         rir_full = np.sum(rir_filt, axis=1)[:,np.newaxis]
-
+    
     return rir_full

@@ -126,7 +126,7 @@ def compute_echograms_array(room, src, rec, abs_wall, limits):
 
 
 
-def compute_echograms_mic(room, src, rec, abs_wall, limits, mic_specs, rand):
+def compute_echograms_mic(room, src, rec, abs_wall, limits, mic_specs):
     """
     Compute the echogram response of individual microphones for a given acoustic scenario.
 
@@ -144,9 +144,6 @@ def compute_echograms_mic(room, src, rec, abs_wall, limits, mic_specs, rand):
         Maximum echogram computation time per band.  Dimension = (nBands)
     mic_specs : ndarray
         Microphone directions and directivity factor. Dimension = (nRec, 4)
-    rand: float
-        displacement (in meters) of the sources for Randomized Image Source Method.
-        Use 0. for no displacement at all.
 
     Returns
     -------
@@ -203,34 +200,28 @@ def compute_echograms_mic(room, src, rec, abs_wall, limits, mic_specs, rand):
 
     # Compute echogram due to pure propagation (frequency-independent)
     echograms = np.empty((nSrc, nRec), dtype=Echogram)
-    ane_echograms = np.empty((nSrc, nRec), dtype=Echogram)
-
     for ns in range(nSrc):
         for nr in range(nRec):
-            #print('Compute echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
-            #print((np.sqrt(src[ns,:]-rec[nr,:])**2))
+            print('Compute echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
             # Compute echogram
-            echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], type, np.max(limits), rand)
-            #ane_echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], 'maxOrder', 1)
-            #echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], type, 62)
-    #print('Apply receiver direcitivites')
+            echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], type, np.max(limits))
+
+    print('Apply receiver direcitivites')
     rec_echograms = rec_module_mic(echograms, mic_specs)
 
     abs_echograms = np.empty((nSrc, nRec, nBands), dtype=Echogram)
     # Apply boundary absorption
     for ns in range(nSrc):
         for nr in range(nRec):
-            #print('Apply absorption: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print('Apply absorption: Source ' + str(ns) + ' - Receiver ' + str(nr))
             # Compute echogram
             abs_echograms[ns, nr] = apply_absorption(rec_echograms[ns, nr], abs_wall, limits)
-            #limits = None
-            #abs_echograms[ns, nr] = apply_absorption(rec_echograms[ns, nr], abs_wall, 62)
 
     # return abs_echograms, rec_echograms, echograms
     return abs_echograms
 
 
-def compute_echograms_sh(room, src, rec, abs_wall, limits, sh_orders, rand, head_orient):
+def compute_echograms_sh(room, src, rec, abs_wall, limits, sh_orders, head_orient):
     """
     Compute the echogram response of individual microphones for a given acoustic scenario,
     in the spherical harmonic domain.
@@ -307,18 +298,18 @@ def compute_echograms_sh(room, src, rec, abs_wall, limits, sh_orders, rand, head
     echograms = np.empty((nSrc, nRec), dtype=Echogram)
     for ns in range(nSrc):
         for nr in range(nRec):
-            #print('Compute echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print('Compute echogram: Source ' + str(ns) + ' - Receiver ' + str(nr))
             # Compute echogram
-            echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], type, np.max(limits), rand)
+            echograms[ns, nr] = ims_coreMtx(room, src[ns,:], rec[nr,:], type, np.max(limits))
 
-    #print('Apply SH directivites')
-    rec_echograms = rec_module_sh(echograms, sh_orders,head_orient)
+    print('Apply SH directivites')
+    rec_echograms = rec_module_sh(echograms, sh_orders, head_orient)
 
     abs_echograms = np.empty((nSrc, nRec, nBands), dtype=Echogram)
     # Apply boundary absorption
     for ns in range(nSrc):
         for nr in range(nRec):
-            #print ('Apply absorption: Source ' + str(ns) + ' - Receiver ' + str(nr))
+            print ('Apply absorption: Source ' + str(ns) + ' - Receiver ' + str(nr))
             # Compute echogram
             abs_echograms[ns, nr] = apply_absorption(rec_echograms[ns, nr], abs_wall, limits)
 
