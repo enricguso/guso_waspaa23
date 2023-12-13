@@ -90,7 +90,7 @@ def process(a):
         # Generally, we simulate up to RT60:
         limits = np.minimum(rt60, maxlim)
         # Compute IRs with MASP at 48k:
-        abs_echograms = srs.compute_echograms_sh(room, src, mic, abs_walls, limits, ambi_order, rims_d, head_orient)
+        abs_echograms = srs.compute_echograms_sh(room, src, mic, abs_walls, limits, ambi_order, head_orient)
         ane_echograms = hlp.crop_echogram(copy.deepcopy(abs_echograms))
         mic_rirs = srs.render_rirs_sh(abs_echograms, band_centerfreqs, fs_rir)/np.sqrt(4*np.pi)
         ane_rirs = srs.render_rirs_sh(ane_echograms, band_centerfreqs, fs_rir)/np.sqrt(4*np.pi)
@@ -162,9 +162,9 @@ if __name__ == '__main__':
     fs_rir = 48000
     fs_target = 16000 
     ambi_order = 10
-    rims_d = .0 # Displacement for Randomized Image Source method
     maxlim = 2. # Maximum reverberation time
-    band_centerfreqs=np.array([1000]) #change this for multiband
+    band_centerfreqs=np.array([1000]) #change this for multiband #The highest center frequency must be at most equal to fs/2, in order to avoid aliasing.
+    #The lowest center frequency must be at least equal to 30 Hz.
     # load BiMagLS decoder from two sound fiels to HA binaural signals:
     decoder = mat73.loadmat(decoder_path)['hnm']
     decoder = np.roll(decoder,500,axis=0)
