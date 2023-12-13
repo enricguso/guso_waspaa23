@@ -307,7 +307,9 @@ def render_rirs_sh(echograms, band_centerfreqs, fs):
             print('     Filtering and combining bands')
             for nh in range(nSH):
                 rirs[:, nh, nr, ns] = filter_rirs(tempIR[:, nh, :], band_centerfreqs, fs).squeeze()
-
+    
+    if nBands > 1:
+        rirs = rirs[L_fbank//2:, :, :, :]    
     return rirs
 
 
